@@ -42,6 +42,7 @@ RUN curl http://mirrors.aliyun.com/repo/Centos-7.repo -o /etc/yum.repos.d/CentOS
     sed -i 's#Server port="8005"#Server port="-1"#' /data/app/tomcat/conf/server.xml && \
     #sed -i 's#Connector port="8080" protocol="HTTP/1.1"#Connector port="8080" protocol="org.apache.coyote.http11.Http11NioProtocol"#' /data/app/tomcat/conf/server.xml && \
     sed -i 's#connectionTimeout="20000"#connectionTimeout="20000" acceptCount="1000" maxConnections="1000" maxThreads="200" minSpareThreads="20" maxPostSize="0" maxHttpHeaderSize="8192" enableLookups="false" disableUploadTimeout="false" tcpNoDelay="true" URIEncoding="utf-8" useBodyEncodingForURI="true"#' /data/app/tomcat/conf/server.xml && \
+    sed -i 's#unpackWARs="true" autoDeploy="true"#unpackWARs="true" autoDeploy="false"#' /data/app/tomcat/conf/server.xml && \
     yum clean all && yum makecache && rpm --rebuilddb && yum install -y openssl-devel apr apr-devel apr-util make gcc glibc-common && \
     cd /tmp && wget $TOMCAT_PKG_SOURCE/tomcat/tomcat-connectors/native/1.2.21/source/tomcat-native-1.2.21-src.tar.gz && \
     tar -zxvf tomcat-native-1.2.21-src.tar.gz && \
@@ -53,7 +54,7 @@ RUN curl http://mirrors.aliyun.com/repo/Centos-7.repo -o /etc/yum.repos.d/CentOS
     mkdir -p /data/{app,log,www} && \
     rm -rf /data/app/tomcat/webapps/{docs,examples} /tmp/apache-tomcat-$TOMCAT_VERSION.tar.gz /tmp/tomcat-native* && \
     yum autoremove -y gcc make  && \
-    rm -rf /var/lib/yum/ /data/app/tomcat/webapps/*
+    rm -rf /var/lib/yum/ /data/app/tomcat/webapps/{ROOT,host-manager,manager}
 
 RUN echo "<?xml version='1.0' encoding='utf-8'?>" | tee /data/app/tomcat/conf/tomcat-users.xml.template && \
     echo '<tomcat-users xmlns="http://tomcat.apache.org/xml" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://tomcat.apache.org/xml tomcat-users.xsd" version="1.0">' | tee -a /data/app/tomcat/conf/tomcat-users.xml.template && \
